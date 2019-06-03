@@ -1,4 +1,8 @@
 package sample.mongoDB;
 
-public class MongoOperations {
+import sample.dataTransferObjects.Currency;
+
+public interface MongoOperations {
+
+    void insertNewRecord(MongoDBClient mongoDBClient, Currency currency);
 }

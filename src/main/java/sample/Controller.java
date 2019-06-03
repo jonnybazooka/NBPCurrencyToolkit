@@ -14,6 +14,9 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import sample.dataAccessObjects.CurrencyDAO;
 import sample.dataTransferObjects.Currency;
+import sample.exceptions.NoSuchCurrencyException;
+import sample.mongoDB.MongoDBClient;
+import sample.mongoDB.MongoOperations;
 import sample.validators.DateValidator;
 
 import java.io.IOException;
@@ -30,10 +33,12 @@ public class Controller {
     public TextField startDate;
     public Label query;
     public ChoiceBox currencyBox;
+    public Button saveToDBButton;
 
     private String selectedCurrencyCode;
     private ObservableList<String> currencies;
     private List<Currency> currencyListHolder;
+    private MongoDBClient mongoDBClient;
 
     @FXML
     private void initialize() {
@@ -43,6 +48,7 @@ public class Controller {
         currencyBox.setItems(currencies);
         currencyBox.setValue("GBP");
         currencyListHolder = new ArrayList<>();
+        mongoDBClient = new MongoDBClient();
     }
 
     public void changeCurrency(ActionEvent event) {
@@ -87,6 +93,21 @@ public class Controller {
         }
         for (Currency currency : currencyListHolder) {
             results.appendText(currency.toString());
+        }
+    }
+
+    public void saveToDatabase(ActionEvent event) {
+        MongoOperations mongoOperations = null;
+        try {
+            mongoOperations = mongoDBClient.getOperation(currencyBox.getValue().toString());
+        } catch (NoSuchCurrencyException e) {
+            results.clear();
+            results.appendText(e.getMessage());
+        }
+        for (Currency currency : currencyListHolder) {
+            if (mongoOperations != null) {
+                mongoOperations.insertNewRecord(mongoDBClient, currency);
+            }
         }
     }
 }
