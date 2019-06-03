@@ -7,7 +7,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -27,6 +33,7 @@ public class Controller {
 
     ApacheHttpTransport apache;
 
+    public Pane mainPane;
     public TextArea results;
     public Button executeQuery;
     public TextField endDate;
@@ -34,6 +41,7 @@ public class Controller {
     public Label query;
     public ChoiceBox currencyBox;
     public Button saveToDBButton;
+    public Button databaseView;
 
     private String selectedCurrencyCode;
     private ObservableList<String> currencies;
@@ -109,5 +117,10 @@ public class Controller {
                 mongoOperations.insertNewRecord(mongoDBClient, currency);
             }
         }
+    }
+
+    public void goToDatabaseView(ActionEvent event) throws IOException {
+        BorderPane dbView = FXMLLoader.load(getClass().getResource("/dbView.fxml"));
+        mainPane.getChildren().setAll(dbView);
     }
 }

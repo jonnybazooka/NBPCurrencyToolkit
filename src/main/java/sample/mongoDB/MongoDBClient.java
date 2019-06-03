@@ -23,10 +23,6 @@ public class MongoDBClient {
     public MongoDBClient() {
         this.mongoClient = new MongoClient("localhost", 27017);
         this.mongoDatabase = mongoClient.getDatabase(DATABASE_NAME);
-        mongoDatabase.createCollection(USD_COLLECTION);
-        mongoDatabase.createCollection(EUR_COLLECTION);
-        mongoDatabase.createCollection(JPY_COLLECTION);
-        mongoDatabase.createCollection(CHF_COLLECTION);
     }
 
     public MongoCollection<Document> getCollection(String collectionName) {
