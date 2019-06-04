@@ -5,13 +5,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import sample.exceptions.NoSuchCurrencyException;
-import sample.mongoDB.operations.CHFOperations;
-import sample.mongoDB.operations.EUROperations;
-import sample.mongoDB.operations.JPYOperations;
-import sample.mongoDB.operations.USDOperations;
+import sample.mongoDB.operations.*;
 
 public class MongoDBClient {
     private static final String DATABASE_NAME = "nbpCurrencyDatabase";
+    public static final String GBP_COLLECTION = "gbpRecords";
     public static final String USD_COLLECTION = "usdRecords";
     public static final String EUR_COLLECTION = "eurRecords";
     public static final String JPY_COLLECTION = "jpyRecords";
@@ -31,6 +29,8 @@ public class MongoDBClient {
 
     public MongoOperations getOperation(String currencyCode) throws NoSuchCurrencyException {
         switch (currencyCode) {
+            case "GBP":
+                return new GBPOperations();
             case "USD":
                 return new USDOperations();
             case "EUR":
