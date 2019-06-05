@@ -8,6 +8,7 @@ import sample.dataTransferObjects.Currency;
 import sample.mongoDB.MongoDBClient;
 import sample.mongoDB.MongoOperations;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +35,12 @@ public class CHFOperations implements MongoOperations {
         return documents;
     }
 
+    @Override
+    public List<Document> findRecordsInDateRange(MongoDBClient mongoDBClient, String start, String end) {
+        MongoCollection<Document> collection = mongoDBClient.getCollection(MongoDBClient.CHF_COLLECTION);
+        List<Document> documents = collection.find(new Document("date", new Document("$gte", start).append("$lte", end)))
+                .into(new ArrayList<>());
+        return documents;
+    }
 
 }

@@ -49,8 +49,13 @@ public class DBViewController {
         for (int i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i]) {
                 try {
+                    List<Document> results;
                     MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
-                    List<Document> results = mongoOperations.findAllRecords(mongoDBClient);
+                    if (startDate.getText().matches("\\d{4}-\\d{2}-\\d{2}") && endDate.getText().matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                    } else {
+                        results = mongoOperations.findAllRecords(mongoDBClient);
+                    }
                     createTableCurrencyObjects(results);
                 } catch (NoSuchCurrencyException e) {
                     System.out.println(e.getMessage());
