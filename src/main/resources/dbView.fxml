@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.dbViewController">
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DBViewController">
    <top>
       <Label text="Database Controller" BorderPane.alignment="CENTER" />
    </top>
@@ -22,11 +22,11 @@
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <CheckBox mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="GBP" />
-                        <CheckBox mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="EUR" />
-                        <CheckBox mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="USD" />
-                        <CheckBox mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="CHF" />
-                        <CheckBox mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="JPY" />
+                        <CheckBox fx:id="gbpCheckbox" mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="GBP" />
+                        <CheckBox fx:id="eurCheckbox" mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="EUR" />
+                        <CheckBox fx:id="usdCheckbox" mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="USD" />
+                        <CheckBox fx:id="chfCheckbox" mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="CHF" />
+                        <CheckBox fx:id="jpyCheckbox" mnemonicParsing="false" prefHeight="37.0" prefWidth="198.0" text="JPY" />
                      </children>
                   </VBox>
                </content>
@@ -36,9 +36,9 @@
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
                         <Label prefHeight="21.0" prefWidth="164.0" text="Start Date" />
-                        <TextField promptText="yyyy-mm-dd" />
+                        <TextField fx:id="startDate" promptText="yyyy-mm-dd" />
                         <Label layoutX="22.0" layoutY="22.0" prefHeight="21.0" prefWidth="164.0" text="End Date" />
-                        <TextField layoutX="22.0" layoutY="43.0" promptText="yyyy-mm-dd" />
+                        <TextField fx:id="endDate" layoutX="22.0" layoutY="43.0" promptText="yyyy-mm-dd" />
                      </children>
                   </VBox>
                </content></TitledPane>
@@ -46,7 +46,7 @@
                <content>
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Button mnemonicParsing="false" prefHeight="38.0" prefWidth="156.0" text="Find Results" />
+                        <Button fx:id="findResults" mnemonicParsing="false" prefHeight="38.0" prefWidth="156.0" text="Find Results" onAction="#fetchResultsFromDB"/>
                      </children>
                   </VBox>
                </content>
@@ -55,14 +55,14 @@
       </Accordion>
    </left>
    <center>
-      <TableView prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="resultsTable" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
         <columns>
-          <TableColumn prefWidth="75.0" text="DATE" />
-            <TableColumn prefWidth="75.0" text="GBP" />
-            <TableColumn prefWidth="75.0" text="USD" />
-          <TableColumn prefWidth="75.0" text="CHF" />
-            <TableColumn prefWidth="75.0" text="EUR" />
-            <TableColumn prefWidth="75.0" text="JPY" />
+          <TableColumn fx:id="dateCol" prefWidth="75.0" text="DATE" />
+            <TableColumn fx:id="gbpCol" prefWidth="75.0" text="GBP" />
+            <TableColumn fx:id="usdCol" prefWidth="75.0" text="USD" />
+            <TableColumn fx:id="chfCol" prefWidth="75.0" text="CHF" />
+            <TableColumn fx:id="eurCol" prefWidth="75.0" text="EUR" />
+            <TableColumn fx:id="jpyCol" prefWidth="75.0" text="JPY" />
         </columns>
       </TableView>
    </center>

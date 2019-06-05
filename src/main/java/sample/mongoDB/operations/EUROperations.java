@@ -8,6 +8,9 @@ import sample.dataTransferObjects.Currency;
 import sample.mongoDB.MongoDBClient;
 import sample.mongoDB.MongoOperations;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EUROperations implements MongoOperations {
 
     @Override
@@ -22,5 +25,12 @@ public class EUROperations implements MongoOperations {
                 , document
                 , new FindOneAndReplaceOptions().upsert(true)
         );
+    }
+
+    @Override
+    public List<Document> findAllRecords(MongoDBClient mongoDBClient) {
+        MongoCollection<Document> collection = mongoDBClient.getCollection(MongoDBClient.EUR_COLLECTION);
+        List<Document> documents = collection.find().into(new ArrayList<>());
+        return documents;
     }
 }
