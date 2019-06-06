@@ -42,4 +42,16 @@ public class JPYOperations implements MongoOperations {
                 .into(new ArrayList<>());
         return documents;
     }
+
+    @Override
+    public long deleteRecordsInDateRange(MongoDBClient mongoDBClient, String start, String end) {
+        MongoCollection<Document> collection = mongoDBClient.getCollection(MongoDBClient.JPY_COLLECTION);
+        return collection.deleteMany(new Document("date", new Document("$gte", start).append("$lte", end))).getDeletedCount();
+    }
+
+    @Override
+    public long deleteAllRecords(MongoDBClient mongoDBClient) {
+        MongoCollection<Document> collection = mongoDBClient.getCollection(MongoDBClient.JPY_COLLECTION);
+        return collection.deleteMany(new Document()).getDeletedCount();
+    }
 }

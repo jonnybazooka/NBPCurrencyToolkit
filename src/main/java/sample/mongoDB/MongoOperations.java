@@ -11,4 +11,8 @@ public interface MongoOperations {
     List<Document> findAllRecords(MongoDBClient mongoDBClient);
 
     List<Document> findRecordsInDateRange(MongoDBClient mongoDBClient, String start, String end);
+
+    long deleteRecordsInDateRange(MongoDBClient mongoDBClient, String start, String end);
+
+    long deleteAllRecords(MongoDBClient mongoDBClient);
 }

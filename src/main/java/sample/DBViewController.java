@@ -4,8 +4,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -14,6 +21,7 @@ import sample.exceptions.NoSuchCurrencyException;
 import sample.mongoDB.MongoDBClient;
 import sample.mongoDB.MongoOperations;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,6 +36,7 @@ public class DBViewController {
     public TextField startDate;
     public TextField endDate;
     public Button findResults;
+    public Button deleteRecords;
     public TableView resultsTable;
     public TableColumn dateCol;
     public TableColumn gbpCol;
@@ -35,6 +44,7 @@ public class DBViewController {
     public TableColumn chfCol;
     public TableColumn eurCol;
     public TableColumn jpyCol;
+    public BorderPane dbViewPane;
 
     private MongoDBClient mongoDBClient;
     private ObservableList<TableCurrencyObject> tableCurrencyObjects;
@@ -69,6 +79,31 @@ public class DBViewController {
             }
         }
         resultsTable.setItems(tableCurrencyObjects);
+    }
+
+    public void deleteRecordsFromDatabase(ActionEvent event) {
+        if (!confirmDelete()) {
+            LOGGER.warn("Delete action canceled. No confirmation.");
+            return;
+        }
+        tableCurrencyObjects.clear();
+        boolean[] checkboxes = checkCurrencyCheckboxes();
+        for (int i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i]) {
+                try {
+                    MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
+                    if (startDate.getText().matches("\\d{4}-\\d{2}-\\d{2}") && endDate.getText().matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        long deletedCount = mongoOperations.deleteRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                        LOGGER.debug("Deleting records from database for date range: " + startDate.getText() + " , " + endDate.getText());
+                    } else {
+                        long deletedCount = mongoOperations.deleteAllRecords(mongoDBClient);
+                        LOGGER.debug("Deleting all records from database.");
+                    }
+                } catch (NoSuchCurrencyException e) {
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
+        }
     }
 
     private void initializeColumns() {
@@ -158,5 +193,19 @@ public class DBViewController {
                 currencyObject.setJpyRate(mid);
                 break;
         }
+    }
+
+    private boolean confirmDelete() {
+        try {
+            SplitPane popup = FXMLLoader.load(getClass().getResource("/confirmationPopupWindow.fxml"));
+            Stage popupStage = new Stage();
+            Scene scene = new Scene(popup);
+            popupStage.setScene(scene);
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.showAndWait();
+        } catch (IOException e) {
+            LOGGER.error("Opening popup window failed. " + e.getMessage(), e);
+        }
+        return ConfirmationPopupWindowController.confirmed;
     }
 }
