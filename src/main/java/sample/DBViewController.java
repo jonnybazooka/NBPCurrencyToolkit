@@ -6,6 +6,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import sample.dataTransferObjects.TableCurrencyObject;
 import sample.exceptions.NoSuchCurrencyException;
@@ -16,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class DBViewController {
+    private static final Logger LOGGER = LogManager.getLogger(DBViewController.class.getName());
 
     public CheckBox gbpCheckbox;
     public CheckBox usdCheckbox;
@@ -38,6 +41,7 @@ public class DBViewController {
 
     @FXML
     private void initialize() {
+        LOGGER.debug("Initializing DBViewController");
         this.mongoDBClient = new MongoDBClient();
         tableCurrencyObjects = FXCollections.observableArrayList();
     }
@@ -53,12 +57,14 @@ public class DBViewController {
                     MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
                     if (startDate.getText().matches("\\d{4}-\\d{2}-\\d{2}") && endDate.getText().matches("\\d{4}-\\d{2}-\\d{2}")) {
                         results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                        LOGGER.debug("Fetching results from database for date range: " + startDate.getText() + " , " + endDate.getText());
                     } else {
                         results = mongoOperations.findAllRecords(mongoDBClient);
+                        LOGGER.debug("Fetching all results from database.");
                     }
                     createTableCurrencyObjects(results);
                 } catch (NoSuchCurrencyException e) {
-                    System.out.println(e.getMessage());
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }
@@ -70,6 +76,7 @@ public class DBViewController {
         TableColumn[] columns = {gbpCol, usdCol, chfCol, eurCol, jpyCol};
         boolean[] checkboxes = checkCurrencyCheckboxes();
         for (int i = 0; i < checkboxes.length; i++) {
+            LOGGER.debug("Setting CellValueFactory for: " + checkboxes.length + " table columns.");
             if(checkboxes[i]) {
                 columns[i].setCellValueFactory(new PropertyValueFactory<TableCurrencyObject, Double>(getCurrencyRateString(i)));
             }
@@ -83,6 +90,11 @@ public class DBViewController {
         checkboxes[2] = chfCheckbox.isSelected();
         checkboxes[3] = eurCheckbox.isSelected();
         checkboxes[4] = jpyCheckbox.isSelected();
+        LOGGER.debug("Checking checkboxes: " + "GBP: " + gbpCheckbox.isSelected()
+                + " USD: " + usdCheckbox.isSelected()
+                + " CHF: " + chfCheckbox.isSelected()
+                + " EUR: " + eurCheckbox.isSelected()
+                + " JPY: " + jpyCheckbox.isSelected());
         return checkboxes;
     }
 
@@ -97,8 +109,9 @@ public class DBViewController {
     }
 
     private void createTableCurrencyObjects(List<Document> results) {
+        LOGGER.debug("Creating TableCurrencyObjects for: " + results.size() + " results.");
         String date;
-        String code = "";
+        String code;
         double mid;
         for (Document document : results) {
             date = document.getString("date");

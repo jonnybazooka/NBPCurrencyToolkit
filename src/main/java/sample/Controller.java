@@ -15,6 +15,8 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sample.dataAccessObjects.CurrencyDAO;
 import sample.dataTransferObjects.Currency;
 import sample.exceptions.NoSuchCurrencyException;
@@ -28,7 +30,8 @@ import java.util.List;
 
 public class Controller {
 
-    ApacheHttpTransport apache;
+    private static final Logger LOGGER = LogManager.getLogger(Controller.class.getName());
+    private ApacheHttpTransport apache;
 
     public Pane mainPane;
     public TextArea results;
@@ -47,6 +50,7 @@ public class Controller {
 
     @FXML
     private void initialize() {
+        LOGGER.debug("Initializing Controller");
         this.apache = new ApacheHttpTransport();
         selectedCurrencyCode = "gbp/";
         currencies = FXCollections.observableArrayList("GBP", "EUR", "USD", "CHF", "JPY");
@@ -62,6 +66,7 @@ public class Controller {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 selectedCurrencyCode = currencyChoices[newValue.intValue()];
                 query.setText(buildHttpQuery());
+                LOGGER.debug("Currency changed to: " + selectedCurrencyCode);
             }
         });
     }
@@ -73,6 +78,7 @@ public class Controller {
         stringBuilder.append(endDate.getText()).append("/");
         stringBuilder.append("?format=json");
         results.clear();
+        LOGGER.debug("Building query: " + stringBuilder.toString());
         return stringBuilder.toString();
     }
 
@@ -82,6 +88,7 @@ public class Controller {
         stringBuilder.append(start).append("/");
         stringBuilder.append(end).append("/");
         stringBuilder.append("?format=json");
+        LOGGER.debug("Building query: " + stringBuilder.toString());
         return stringBuilder.toString();
     }
 
@@ -89,6 +96,7 @@ public class Controller {
         currencyListHolder.clear();
         List<String[]> datePairs = new DateValidator().getStartEndDates(startDate.getText(), endDate.getText());
         for (String[] pair : datePairs) {
+            LOGGER.debug("Executing query for date pair: " + pair[0] + " , " + pair[1]);
             HttpGet httpGet = new HttpGet(buildHttpQuery(pair[0], pair[1]));
             HttpResponse response = apache.getHttpClient().execute(httpGet);
             HttpEntity entity = response.getEntity();
@@ -106,6 +114,7 @@ public class Controller {
         try {
             mongoOperations = mongoDBClient.getOperation(currencyBox.getValue().toString());
         } catch (NoSuchCurrencyException e) {
+            LOGGER.error(e.getMessage(), e);
             results.clear();
             results.appendText(e.getMessage());
         }
@@ -114,10 +123,12 @@ public class Controller {
                 mongoOperations.insertNewRecord(mongoDBClient, currency);
             }
         }
+        LOGGER.debug(currencyListHolder.size() + " new objects to database.");
     }
 
     public void goToDatabaseView(ActionEvent event) throws IOException {
         BorderPane dbView = FXMLLoader.load(getClass().getResource("/dbView.fxml"));
         mainPane.getChildren().setAll(dbView);
+        LOGGER.debug("Switching view to dbView");
     }
 }
