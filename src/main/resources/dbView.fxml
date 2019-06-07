@@ -10,6 +10,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="dbViewPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DBViewController">
@@ -48,7 +49,7 @@
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
                         <Button fx:id="findResults" mnemonicParsing="false" onAction="#fetchResultsFromDB" prefHeight="40.0" prefWidth="165.0" text="Find Results" />
-                        <Button fx:id="deleteRecords" mnemonicParsing="false" prefHeight="40.0" prefWidth="165.0" text="Delete Records" onAction="#deleteRecordsFromDatabase">
+                        <Button fx:id="deleteRecords" mnemonicParsing="false" onAction="#deleteRecordsFromDatabase" prefHeight="40.0" prefWidth="165.0" text="Delete Records">
                            <opaqueInsets>
                               <Insets />
                            </opaqueInsets>
@@ -75,4 +76,15 @@
         </columns>
       </TableView>
    </center>
+   <bottom>
+      <HBox prefHeight="45.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="backToMainButton" mnemonicParsing="false" prefHeight="45.0" prefWidth="151.0" text="Back to Main View" onAction="#backToMainView">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="10.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
 </BorderPane>

@@ -5,14 +5,15 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
-import javafx.stage.Popup;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -45,6 +46,7 @@ public class DBViewController {
     public TableColumn eurCol;
     public TableColumn jpyCol;
     public BorderPane dbViewPane;
+    public Button backToMainButton;
 
     private MongoDBClient mongoDBClient;
     private ObservableList<TableCurrencyObject> tableCurrencyObjects;
@@ -88,21 +90,25 @@ public class DBViewController {
         }
         tableCurrencyObjects.clear();
         boolean[] checkboxes = checkCurrencyCheckboxes();
+        long deletedCount = 0;
         for (int i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i]) {
                 try {
                     MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
                     if (startDate.getText().matches("\\d{4}-\\d{2}-\\d{2}") && endDate.getText().matches("\\d{4}-\\d{2}-\\d{2}")) {
-                        long deletedCount = mongoOperations.deleteRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                        deletedCount += mongoOperations.deleteRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
                         LOGGER.debug("Deleting records from database for date range: " + startDate.getText() + " , " + endDate.getText());
                     } else {
-                        long deletedCount = mongoOperations.deleteAllRecords(mongoDBClient);
+                        deletedCount += mongoOperations.deleteAllRecords(mongoDBClient);
                         LOGGER.debug("Deleting all records from database.");
                     }
                 } catch (NoSuchCurrencyException e) {
                     LOGGER.error(e.getMessage(), e);
                 }
             }
+        }
+        if (deletedCount > 0) {
+            showDeletedCountPopup(deletedCount);
         }
     }
 
@@ -207,5 +213,27 @@ public class DBViewController {
             LOGGER.error("Opening popup window failed. " + e.getMessage(), e);
         }
         return ConfirmationPopupWindowController.confirmed;
+    }
+
+    private void showDeletedCountPopup(long deletedCount) {
+        try {
+            DeletedCountPopupController.deletedCount = deletedCount;
+            AnchorPane popup = FXMLLoader.load(getClass().getResource("/deletedCountPopup.fxml"));
+            Stage popupStage = new Stage();
+            Scene scene = new Scene(popup);
+            popupStage.setScene(scene);
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            popupStage.showAndWait();
+        } catch (IOException e) {
+            LOGGER.error("Opening popup window failed: " + e.getMessage(), e);
+        }
+    }
+
+    public void backToMainView(ActionEvent event) throws IOException {
+        Parent mainView = FXMLLoader.load(getClass().getResource("/sample.fxml"));
+        Scene scene = new Scene(mainView);
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        window.show();
     }
 }
