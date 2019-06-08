@@ -1,5 +1,6 @@
 package sample.validators;
 
+import javafx.scene.control.TextField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -31,5 +32,10 @@ public class DateValidator {
         datePairs.add(pair);
         LOGGER.debug("Creating date pair: " + pair[0] + " , " + pair[1]);
         return datePairs;
+    }
+
+    public boolean checkIfDateFormatIsCorrect(TextField startDate, TextField endDate) {
+        return startDate.getText().matches("\\d{4}-\\d{2}-\\d{2}")
+                && endDate.getText().matches("\\d{4}-\\d{2}-\\d{2}");
     }
 }

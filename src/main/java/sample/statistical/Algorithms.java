@@ -44,6 +44,29 @@ public class Algorithms {
         BigDecimal d1d2d3d4 = d1d2.multiply(d3d4);
         BigDecimal denominator = BigDecimal.valueOf(Math.sqrt(d1d2d3d4.doubleValue()));
 
-        return numerator.divide(denominator, RoundingMode.HALF_DOWN);
+        return numerator.divide(denominator, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal variance(double[] ratesCur) {
+        BigDecimal observations = BigDecimal.valueOf(ratesCur.length);
+        BigDecimal average = getAverage(ratesCur);
+        BigDecimal sumOfSmallestSquares = BigDecimal.ZERO;
+        for (double d : ratesCur) {
+            BigDecimal bigD = BigDecimal.valueOf(d);
+            BigDecimal diff = bigD.subtract(average);
+            BigDecimal smSquare = diff.pow(2);
+            sumOfSmallestSquares = sumOfSmallestSquares.add(smSquare);
+        }
+        return sumOfSmallestSquares.divide(observations, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal getAverage(double[] doubleArray) {
+        BigDecimal observations = BigDecimal.valueOf(doubleArray.length);
+        BigDecimal sum = BigDecimal.ZERO;
+        for (double d : doubleArray) {
+            BigDecimal bigD = BigDecimal.valueOf(d);
+            sum = sum.add(bigD);
+        }
+        return sum.divide(observations, RoundingMode.HALF_UP);
     }
 }

@@ -21,7 +21,7 @@ import sample.dataTransferObjects.TableCurrencyObject;
 import sample.exceptions.NoSuchCurrencyException;
 import sample.mongoDB.MongoDBClient;
 import sample.mongoDB.MongoOperations;
-
+import sample.validators.DateValidator;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -51,6 +51,7 @@ public class DBViewController {
 
     private MongoDBClient mongoDBClient;
     private ObservableList<TableCurrencyObject> tableCurrencyObjects;
+    private DateValidator dateValidator = new DateValidator();
 
     @FXML
     private void initialize() {
@@ -68,7 +69,7 @@ public class DBViewController {
                 try {
                     List<Document> results;
                     MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
-                    if (startDate.getText().matches("\\d{4}-\\d{2}-\\d{2}") && endDate.getText().matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    if (dateValidator.checkIfDateFormatIsCorrect(startDate, endDate)) {
                         results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
                         LOGGER.debug("Fetching results from database for date range: " + startDate.getText() + " , " + endDate.getText());
                     } else {
@@ -96,7 +97,7 @@ public class DBViewController {
             if (checkboxes[i]) {
                 try {
                     MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
-                    if (startDate.getText().matches("\\d{4}-\\d{2}-\\d{2}") && endDate.getText().matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    if (dateValidator.checkIfDateFormatIsCorrect(startDate, endDate)) {
                         deletedCount += mongoOperations.deleteRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
                         LOGGER.debug("Deleting records from database for date range: " + startDate.getText() + " , " + endDate.getText());
                     } else {
