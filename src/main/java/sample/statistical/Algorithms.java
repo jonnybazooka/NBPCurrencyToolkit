@@ -8,6 +8,7 @@ import sample.validators.AlgorithmsValidator;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
 
 public class Algorithms {
     private static final Logger LOGGER = LogManager.getLogger(Algorithms.class.getName());
@@ -47,6 +48,23 @@ public class Algorithms {
         return numerator.divide(denominator, RoundingMode.HALF_UP);
     }
 
+    public BigDecimal covariance(double[] ratesCur1, double[] ratesCur2) throws NotCompatibileArraysException {
+        if (!new AlgorithmsValidator().validateIfArraysAreEqualLength(ratesCur1, ratesCur2)) {
+            throw new NotCompatibileArraysException("Arrays must be of equal length.");
+        }
+        BigDecimal observations = BigDecimal.valueOf(ratesCur1.length);
+        BigDecimal sumOfMultiplicationsXY = BigDecimal.ZERO;
+        for (int i = 0; i < ratesCur1.length; i++) {
+            CorrelationObject correlationObject = new CorrelationObject(ratesCur1[i], ratesCur2[i]);
+            sumOfMultiplicationsXY = sumOfMultiplicationsXY.add(correlationObject.getXmultiplyY());
+        }
+        BigDecimal averageOfX = getAverage(ratesCur1);
+        BigDecimal averageOfY = getAverage(ratesCur2);
+        BigDecimal multiplicationOfAverages = averageOfX.multiply(averageOfY);
+        BigDecimal sOMXYbyObs = sumOfMultiplicationsXY.divide(observations, RoundingMode.HALF_UP);
+        return sOMXYbyObs.subtract(multiplicationOfAverages);
+    }
+
     public BigDecimal variance(double[] ratesCur) {
         BigDecimal observations = BigDecimal.valueOf(ratesCur.length);
         BigDecimal average = getAverage(ratesCur);
@@ -58,6 +76,19 @@ public class Algorithms {
             sumOfSmallestSquares = sumOfSmallestSquares.add(smSquare);
         }
         return sumOfSmallestSquares.divide(observations, RoundingMode.HALF_UP);
+    }
+
+    public BigDecimal standardDeviation(double[] ratesCur) {
+        BigDecimal variance = variance(ratesCur);
+        return BigDecimal.valueOf(Math.sqrt(variance.doubleValue()));
+    }
+
+    public BigDecimal getRange(double[] ratesCur) {
+        double maxRate = Arrays.stream(ratesCur).max().getAsDouble();
+        double minRate = Arrays.stream(ratesCur).min().getAsDouble();
+        BigDecimal max = BigDecimal.valueOf(maxRate);
+        BigDecimal min = BigDecimal.valueOf(minRate);
+        return max.subtract(min);
     }
 
     public BigDecimal getAverage(double[] doubleArray) {

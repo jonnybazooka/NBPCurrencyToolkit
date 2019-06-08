@@ -19,6 +19,7 @@ import sample.validators.CheckboxValidator;
 import sample.validators.DateValidator;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +39,15 @@ public class StatisticalViewController {
     public CheckBox jpyBox;
     public TextField startDate;
     public TextField endDate;
-    public Button rPearsonButton;
+    public Button correlationButton;
     public TextField correlationField;
     public TextField varianceField;
     public Button basicStatsButton;
     public TextField averageField;
+    public TextField rangeField;
+    public TextField deviationField;
+    public TextField coefficientField;
+    public TextField covarianceField;
 
     @FXML
     private void initialize() {
@@ -66,13 +71,18 @@ public class StatisticalViewController {
         this.mongoDBClient = mongoDBClient;
     }
 
-    public void calculatePearsonsR(ActionEvent event) {
+    public void calculateCorrelationStatistics(ActionEvent event) {
         if (!checkboxValidator.checkIfNumberOfCheckedBoxesMatchesExpected(boxesCheckedCount, 2)) {
             correlationField.setText("ERROR");
             LOGGER.warn("Unexpected number of checkboxes selected. Expected: 2, Selected: " + boxesCheckedCount);
             return;
         }
         boolean[] checkboxes = checkCurrencyCheckboxes();
+        calculatePearsonsR(checkboxes);
+        calculateCovariance(checkboxes);
+    }
+
+    private void calculatePearsonsR(boolean[] checkboxes) {
         List<double[]> arguments = new ArrayList<>();
         for (int i = 0; i < checkboxes.length; i++) {
             if (checkboxes[i]) {
@@ -98,29 +108,83 @@ public class StatisticalViewController {
         }
     }
 
+    private void calculateCovariance(boolean[] checkboxes) {
+        List<double[]> arguments = new ArrayList<>();
+        for (int i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i]) {
+                try {
+                    MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
+                    if (dateValidator.checkIfDateFormatIsCorrect(startDate, endDate)) {
+                        List<Document> results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                        double[] rates = createRatesArray(results);
+                        arguments.add(rates);
+                    }
+                } catch (NoSuchCurrencyException e) {
+                    covarianceField.setText("ERROR");
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
+        }
+        try {
+            BigDecimal covariance = algorithms.covariance(arguments.get(0), arguments.get(1));
+            covarianceField.setText(covariance.setScale(4, RoundingMode.HALF_UP).toPlainString());
+        } catch (NotCompatibileArraysException e) {
+            covarianceField.setText("ERROR");
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
+
+
+
     public void calculateBasicStatistics(ActionEvent event) {
         if (!checkboxValidator.checkIfNumberOfCheckedBoxesMatchesExpected(boxesCheckedCount, 1)) {
             varianceField.setText("ERROR");
             averageField.setText("ERROR");
+            rangeField.setText("ERROR");
+            deviationField.setText("ERROR");
+            coefficientField.setText("ERROR");
             LOGGER.warn("Unexpected number of checkboxes selected. Expected: 1, Selected: " + boxesCheckedCount);
             return;
         }
         varianceField.clear();
         averageField.clear();
-        calculateAverage();
+        rangeField.clear();
+        deviationField.clear();
+        BigDecimal average = calculateAverage();
+        calculateRange();
         calculateVariance();
+        BigDecimal deviation = calculateStandardDeviation();
+        calculateCoefficientOfVariation(deviation, average);
     }
 
-    private void calculateAverage() {
+    private BigDecimal calculateAverage() {
         try {
             MongoOperations mongoOperations = mongoDBClient.getOperation(getCodeFromCheckbox());
             if (dateValidator.checkIfDateFormatIsCorrect(startDate, endDate)) {
                 List<Document> results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
                 double[] rates = createRatesArray(results);
                 BigDecimal average = algorithms.getAverage(rates);
-                averageField.setText(average.toPlainString());
+                averageField.setText(average.setScale(4, RoundingMode.HALF_UP).toPlainString());
+                return average;
             } else {
                 averageField.setText("ERROR");
+            }
+        } catch (NoSuchCurrencyException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    private void calculateRange() {
+        try {
+            MongoOperations mongoOperations = mongoDBClient.getOperation(getCodeFromCheckbox());
+            if (dateValidator.checkIfDateFormatIsCorrect(startDate, endDate)) {
+                List<Document> results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                double[] rates = createRatesArray(results);
+                BigDecimal range = algorithms.getRange(rates);
+                rangeField.setText(range.setScale(4, RoundingMode.HALF_UP).toPlainString());
+            } else {
+                rangeField.setText("ERROR");
             }
         } catch (NoSuchCurrencyException e) {
             LOGGER.error(e.getMessage(), e);
@@ -134,13 +198,37 @@ public class StatisticalViewController {
                 List<Document> results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
                 double[] rates = createRatesArray(results);
                 BigDecimal variance = algorithms.variance(rates);
-                varianceField.setText(variance.toPlainString());
+                varianceField.setText(variance.setScale(4, RoundingMode.HALF_UP).toPlainString());
             } else {
                 varianceField.setText("ERROR");
             }
         } catch (NoSuchCurrencyException e) {
             LOGGER.error(e.getMessage(), e);
         }
+    }
+
+    private BigDecimal calculateStandardDeviation() {
+        try {
+            MongoOperations mongoOperations = mongoDBClient.getOperation(getCodeFromCheckbox());
+            if (dateValidator.checkIfDateFormatIsCorrect(startDate, endDate)) {
+                List<Document> results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                double[] rates = createRatesArray(results);
+                BigDecimal deviation = algorithms.standardDeviation(rates);
+                deviationField.setText(deviation.setScale(4, RoundingMode.HALF_UP).toPlainString());
+                return deviation;
+            } else {
+                deviationField.setText("ERROR");
+            }
+        } catch (NoSuchCurrencyException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    private void calculateCoefficientOfVariation(BigDecimal deviation, BigDecimal average) {
+        BigDecimal coefficient = deviation.divide(average, RoundingMode.HALF_UP);
+        coefficient = coefficient.multiply(BigDecimal.valueOf(100));
+        coefficientField.setText(coefficient.setScale(2, RoundingMode.HALF_UP).toPlainString().concat(" %"));
     }
 
     private boolean[] checkCurrencyCheckboxes() {
@@ -183,5 +271,7 @@ public class StatisticalViewController {
         }
         return rates;
     }
+
+
 
 }
