@@ -1,14 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="sample.StatisticalView"
-            prefHeight="600.0" prefWidth="800.0">
-
-</AnchorPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.StatisticalViewController">
+   <top>
+      <Label text="Statistical Algorythms" BorderPane.alignment="CENTER" />
+   </top>
+   <left>
+      <Accordion BorderPane.alignment="CENTER">
+        <panes>
+          <TitledPane animated="false" text="Currency">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <CheckBox fx:id="gbpBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="GBP" />
+                        <CheckBox fx:id="usdBox" layoutX="14.0" layoutY="45.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="USD" />
+                        <CheckBox fx:id="chfBox" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="CHF" />
+                        <CheckBox fx:id="eurBox" layoutX="14.0" layoutY="115.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="EUR" />
+                        <CheckBox fx:id="jpyBox" layoutX="14.0" layoutY="148.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="JPY" />
+                     </children></AnchorPane>
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Dates">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Label layoutX="14.0" layoutY="14.0" text="Start Date" />
+                        <TextField fx:id="startDate" layoutX="14.0" layoutY="35.0" prefHeight="31.0" prefWidth="170.0" promptText="yyyy-mm-dd" />
+                        <Label layoutX="14.0" layoutY="78.0" text="End Date" />
+                        <TextField fx:id="endDate" layoutX="15.0" layoutY="99.0" prefHeight="31.0" prefWidth="170.0" promptText="yyyy-mm-dd" />
+                     </children></AnchorPane>
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Algorythms">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="rPearsonButton" mnemonicParsing="false" prefHeight="31.0" prefWidth="200.0" text="r Pearson" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" onAction="#calculatePearsonsR"/>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </TitledPane>
+        </panes>
+      </Accordion>
+   </left>
+   <center>
+      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label prefHeight="25.0" prefWidth="75.0" text="Corelation">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Label>
+            <TextField fx:id="correlationField" prefHeight="25.0" prefWidth="100.0">
+               <HBox.margin>
+                  <Insets top="10.0" />
+               </HBox.margin>
+            </TextField>
+         </children>
+         <padding>
+            <Insets left="5.0" />
+         </padding>
+      </HBox>
+   </center>
+</BorderPane>

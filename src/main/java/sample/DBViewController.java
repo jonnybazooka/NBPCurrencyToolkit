@@ -47,6 +47,7 @@ public class DBViewController {
     public TableColumn jpyCol;
     public BorderPane dbViewPane;
     public Button backToMainButton;
+    public Button statisticsButton;
 
     private MongoDBClient mongoDBClient;
     private ObservableList<TableCurrencyObject> tableCurrencyObjects;
@@ -234,6 +235,17 @@ public class DBViewController {
         Scene scene = new Scene(mainView);
         Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
         window.setScene(scene);
+        window.show();
+    }
+
+    public void showStatisticsView(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/statisticalView.fxml"));
+        Parent statsView = loader.load();
+        Scene scene = new Scene(statsView);
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        StatisticalViewController controller = loader.<StatisticalViewController>getController();
+        controller.setMongoDBClient(mongoDBClient);
         window.show();
     }
 }

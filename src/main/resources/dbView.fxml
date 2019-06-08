@@ -79,9 +79,14 @@
    <bottom>
       <HBox prefHeight="45.0" prefWidth="800.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="backToMainButton" mnemonicParsing="false" prefHeight="45.0" prefWidth="151.0" text="Back to Main View" onAction="#backToMainView">
+            <Button fx:id="backToMainButton" mnemonicParsing="false" onAction="#backToMainView" prefHeight="45.0" prefWidth="150.0" text="Back to Main View">
                <HBox.margin>
                   <Insets bottom="5.0" left="10.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="statisticsButton" mnemonicParsing="false" prefHeight="45.0" prefWidth="150.0" text="Statistics" onAction="#showStatisticsView">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </HBox.margin>
             </Button>
          </children>
