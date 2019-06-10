@@ -1,4 +1,4 @@
-package sample;
+package sample.controllers;
 
 import com.google.api.client.http.apache.ApacheHttpTransport;
 import javafx.beans.value.ChangeListener;

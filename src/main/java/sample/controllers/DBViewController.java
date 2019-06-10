@@ -1,4 +1,4 @@
-package sample;
+package sample.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -247,6 +247,7 @@ public class DBViewController {
         window.setScene(scene);
         StatisticalViewController controller = loader.<StatisticalViewController>getController();
         controller.setMongoDBClient(mongoDBClient);
+        LOGGER.debug("Switching to statistical view.");
         window.show();
     }
 }

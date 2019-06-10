@@ -1,4 +1,4 @@
-package sample;
+package sample.controllers;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -48,6 +48,8 @@ public class StatisticalViewController {
     public TextField deviationField;
     public TextField coefficientField;
     public TextField covarianceField;
+    public TextField regressionField;
+    public TextField reversedRegressionField;
 
     @FXML
     private void initialize() {
@@ -73,13 +75,17 @@ public class StatisticalViewController {
 
     public void calculateCorrelationStatistics(ActionEvent event) {
         if (!checkboxValidator.checkIfNumberOfCheckedBoxesMatchesExpected(boxesCheckedCount, 2)) {
+            covarianceField.setText("ERROR");
             correlationField.setText("ERROR");
+            reversedRegressionField.setText("ERROR");
+            regressionField.setText("ERROR");
             LOGGER.warn("Unexpected number of checkboxes selected. Expected: 2, Selected: " + boxesCheckedCount);
             return;
         }
         boolean[] checkboxes = checkCurrencyCheckboxes();
         calculatePearsonsR(checkboxes);
         calculateCovariance(checkboxes);
+        calculateRegressionFunction(checkboxes);
     }
 
     private void calculatePearsonsR(boolean[] checkboxes) {
@@ -134,7 +140,41 @@ public class StatisticalViewController {
         }
     }
 
-
+    private void calculateRegressionFunction(boolean[] checkboxes) {
+        List<double[]> arguments = new ArrayList<>();
+        List<String> currencies = new ArrayList<>();
+        for (int i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i]) {
+                try {
+                    MongoOperations mongoOperations = mongoDBClient.getOperation(getCurrencyCode(i));
+                    currencies.add(getCurrencyCode(i));
+                    if (dateValidator.checkIfDateFormatIsCorrect(startDate, endDate)) {
+                        List<Document> results = mongoOperations.findRecordsInDateRange(mongoDBClient, startDate.getText(), endDate.getText());
+                        double[] rates = createRatesArray(results);
+                        arguments.add(rates);
+                    }
+                } catch (NoSuchCurrencyException e) {
+                    regressionField.setText("ERROR");
+                    reversedRegressionField.setText("ERROR");
+                    LOGGER.error(e.getMessage(), e);
+                }
+            }
+        }
+        try {
+            BigDecimal[] regressionCoefficients = algorithms.getRegression(arguments.get(0), arguments.get(1));
+            BigDecimal[] regressionCoefficientsReversed = algorithms.getRegression(arguments.get(1), arguments.get(0));
+            String regressionFunction = currencies.get(1) + " = " + regressionCoefficients[0].setScale(3, RoundingMode.HALF_UP) + " + "
+                    + regressionCoefficients[1].setScale(3, RoundingMode.HALF_UP) + " * " + currencies.get(0);
+            String regressionFunctionReversed = currencies.get(0) + " = " + regressionCoefficientsReversed[0].setScale(3, RoundingMode.HALF_UP) + " + "
+                    + regressionCoefficientsReversed[1].setScale(3, RoundingMode.HALF_UP) + " * " + currencies.get(1);
+            regressionField.setText(regressionFunction);
+            reversedRegressionField.setText(regressionFunctionReversed);
+        } catch (NotCompatibileArraysException e) {
+            regressionField.setText("ERROR");
+            reversedRegressionField.setText("ERROR");
+            LOGGER.error(e.getMessage(), e);
+        }
+    }
 
     public void calculateBasicStatistics(ActionEvent event) {
         if (!checkboxValidator.checkIfNumberOfCheckedBoxesMatchesExpected(boxesCheckedCount, 1)) {
@@ -271,7 +311,4 @@ public class StatisticalViewController {
         }
         return rates;
     }
-
-
-
 }

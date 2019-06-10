@@ -4,7 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="150.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.DeletedCountPopupController">
+<AnchorPane prefHeight="150.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.DeletedCountPopupController">
    <children>
       <Label fx:id="messageBox" layoutX="14.0" layoutY="14.0" prefHeight="64.0" prefWidth="174.0" text="Label" />
       <Button fx:id="closeButton" layoutX="14.0" layoutY="105.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="174.0" text="Close" onAction="#close"/>

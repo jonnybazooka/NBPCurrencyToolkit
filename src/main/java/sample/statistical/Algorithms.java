@@ -65,6 +65,36 @@ public class Algorithms {
         return sOMXYbyObs.subtract(multiplicationOfAverages);
     }
 
+    public BigDecimal[] getRegression(double[] ratesCur1, double[] ratesCur2) throws NotCompatibileArraysException {
+        if (!new AlgorithmsValidator().validateIfArraysAreEqualLength(ratesCur1, ratesCur2)) {
+            throw new NotCompatibileArraysException("Arrays must be of equal length.");
+        }
+        BigDecimal observations = BigDecimal.valueOf(ratesCur1.length);
+        BigDecimal sumOfMultiplicationsXY = BigDecimal.ZERO;
+        BigDecimal sumOfX = BigDecimal.ZERO;
+        BigDecimal sumOfY = BigDecimal.ZERO;
+        BigDecimal sumOfXsquared = BigDecimal.ZERO;
+        for (int i = 0; i < ratesCur1.length; i++) {
+            CorrelationObject correlationObject = new CorrelationObject(ratesCur1[i], ratesCur2[i]);
+            sumOfMultiplicationsXY = sumOfMultiplicationsXY.add(correlationObject.getXmultiplyY());
+            sumOfX = sumOfX.add(correlationObject.getRateX());
+            sumOfY = sumOfY.add(correlationObject.getRateY());
+            sumOfXsquared = sumOfXsquared.add(correlationObject.getXsqared());
+        }
+        BigDecimal numeratorEx1 = observations.multiply(sumOfMultiplicationsXY);
+        BigDecimal numeratorEx2 = sumOfX.multiply(sumOfY);
+        BigDecimal numerator = numeratorEx1.subtract(numeratorEx2);
+        BigDecimal denominatorEx1 = observations.multiply(sumOfXsquared);
+        BigDecimal denominatorEx2 = sumOfX.pow(2);
+        BigDecimal denominator = denominatorEx1.subtract(denominatorEx2);
+        BigDecimal coeff_b = numerator.divide(denominator, RoundingMode.HALF_UP);
+        BigDecimal averageX = getAverage(ratesCur1);
+        BigDecimal averageY = getAverage(ratesCur2);
+        BigDecimal coeff_bX = coeff_b.multiply(averageX);
+        BigDecimal coeff_a = averageY.subtract(coeff_bX);
+        return new BigDecimal[]{coeff_a, coeff_b};
+    }
+
     public BigDecimal variance(double[] ratesCur) {
         BigDecimal observations = BigDecimal.valueOf(ratesCur.length);
         BigDecimal average = getAverage(ratesCur);
