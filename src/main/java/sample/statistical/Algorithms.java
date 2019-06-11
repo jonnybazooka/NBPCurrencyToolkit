@@ -130,4 +130,11 @@ public class Algorithms {
         }
         return sum.divide(observations, RoundingMode.HALF_UP);
     }
+
+    public BigDecimal gaussianStandarization(double[] ratesCur, double rate) {
+        BigDecimal average = getAverage(ratesCur);
+        BigDecimal stDeviation = standardDeviation(ratesCur);
+        BigDecimal numerator = BigDecimal.valueOf(rate).subtract(average);
+        return numerator.divide(stDeviation, RoundingMode.HALF_UP);
+    }
 }

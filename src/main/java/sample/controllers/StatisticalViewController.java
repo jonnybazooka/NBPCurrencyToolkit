@@ -4,9 +4,15 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -18,6 +24,7 @@ import sample.statistical.Algorithms;
 import sample.validators.CheckboxValidator;
 import sample.validators.DateValidator;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -50,6 +57,8 @@ public class StatisticalViewController {
     public TextField covarianceField;
     public TextField regressionField;
     public TextField reversedRegressionField;
+    public Button backToDBButton;
+    public Button neuralNetButton;
 
     @FXML
     private void initialize() {
@@ -310,5 +319,26 @@ public class StatisticalViewController {
             iterator++;
         }
         return rates;
+    }
+
+    public void goToDatabaseView(ActionEvent event) throws IOException {
+        BorderPane dbView = FXMLLoader.load(getClass().getResource("/dbView.fxml"));
+        Scene scene = new Scene(dbView);
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        window.show();
+        LOGGER.debug("Switching view to dbView");
+    }
+
+    public void goToNeuralNetView(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/neuralNetworkView.fxml"));
+        Parent statsView = loader.load();
+        Scene scene = new Scene(statsView);
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        NeuralNetViewController controller = loader.<NeuralNetViewController>getController();
+        controller.setMongoDBClient(mongoDBClient);
+        LOGGER.debug("Switching to statistical view.");
+        window.show();
     }
 }

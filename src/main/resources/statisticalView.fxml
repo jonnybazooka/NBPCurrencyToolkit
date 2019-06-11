@@ -89,4 +89,20 @@
          </padding>
       </HBox>
    </center>
+   <bottom>
+      <HBox prefHeight="43.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="backToDBButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="140.0" text="Back to Statistical" onAction="#goToDatabaseView">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+            <Button fx:id="neuralNetButton" mnemonicParsing="false" prefHeight="35.0" prefWidth="140.0" text="Neural Network" onAction="#goToNeuralNetView">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
 </BorderPane>

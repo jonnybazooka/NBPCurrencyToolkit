@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.NeuralNetViewController">
+   <top>
+      <Label text="Neural Network" BorderPane.alignment="CENTER" />
+   </top>
+   <left>
+      <Accordion BorderPane.alignment="CENTER">
+        <panes>
+          <TitledPane animated="false" text="Currencies">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                      <CheckBox fx:id="gbpBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="GBP" />
+                      <CheckBox fx:id="usdBox" layoutX="14.0" layoutY="45.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="USD" />
+                      <CheckBox fx:id="chfBox" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="CHF" />
+                      <CheckBox fx:id="eurBox" layoutX="14.0" layoutY="115.0" mnemonicParsing="false" prefHeight="21.0" prefWidth="155.0" text="EUR" />
+                  </children></AnchorPane>
+            </content>
+          </TitledPane>
+          <TitledPane animated="false" text="Dates">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <children>
+                    <Label layoutX="14.0" layoutY="14.0" text="Train Start Date" />
+                    <TextField fx:id="trainStartDate" layoutX="14.0" layoutY="35.0" prefHeight="31.0" prefWidth="170.0" promptText="yyyy-mm-dd" />
+                    <Label layoutX="14.0" layoutY="78.0" text="Train End Date" />
+                    <TextField fx:id="trainEndDate" layoutX="15.0" layoutY="99.0" prefHeight="31.0" prefWidth="170.0" promptText="yyyy-mm-dd" />
+                        <Label layoutX="14.0" layoutY="147.0" text="Test Start Date" />
+                        <TextField fx:id="testStartDate" layoutX="14.0" layoutY="168.0" prefHeight="31.0" prefWidth="170.0" promptText="yyyy-mm-dd" />
+                        <Label layoutX="14.0" layoutY="217.0" text="Test End Date" />
+                        <TextField fx:id="testEndDate" layoutX="15.0" layoutY="238.0" prefHeight="31.0" prefWidth="170.0" promptText="yyyy-mm-dd" />
+                </children></AnchorPane>
+            </content>
+          </TitledPane>
+            <TitledPane animated="false" text="Training Parameters">
+                <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <children>
+                            <Label layoutX="14.0" layoutY="14.0" text="Number of Cycles" />
+                            <TextField fx:id="cycles" layoutX="14.0" layoutY="35.0" prefHeight="31.0" prefWidth="170.0" promptText="sugested 100000" />
+                            <Label layoutX="14.0" layoutY="78.0" text="Batch Size" />
+                            <TextField fx:id="batchSize" layoutX="15.0" layoutY="99.0" prefHeight="31.0" prefWidth="170.0" promptText="sugested 1/4" />
+                        </children>
+                    </AnchorPane>
+                </content>
+            </TitledPane>
+          <TitledPane animated="false" text="Network Operations">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Button fx:id="loadDataButton" mnemonicParsing="false" onAction="#loadDataForTraining" prefHeight="60.0" text="Load Data For Training" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                        <Button fx:id="trainButton" mnemonicParsing="false" onAction="#train" prefHeight="60.0" text="Train" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="155.0" />
+                        <Button fx:id="loadTestButton" mnemonicParsing="false" onAction="#loadTestData" prefHeight="60.0" text="Load Data For Testing" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="80.0" />
+                        <Button fx:id="testButton" mnemonicParsing="false" onAction="#test" prefHeight="60.0" text="Test" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="230.0" />
+                     </children></AnchorPane>
+            </content>
+          </TitledPane>
+
+        </panes>
+      </Accordion>
+   </left>
+   <center>
+      <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
+</BorderPane>
