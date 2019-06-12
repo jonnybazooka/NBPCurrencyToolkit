@@ -1,7 +1,6 @@
 package sample.mongoDB.operations;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.DeleteOptions;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import org.bson.Document;

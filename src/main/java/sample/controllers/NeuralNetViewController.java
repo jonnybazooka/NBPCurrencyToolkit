@@ -2,10 +2,15 @@ package sample.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
@@ -14,12 +19,15 @@ import sample.dataAccessObjects.TrainingObjectDAO;
 import sample.dataTransferObjects.TestSetObject;
 import sample.dataTransferObjects.TrainingSetObject;
 import sample.exceptions.NoSuchCurrencyException;
+import sample.io.NetworkFileOperations;
 import sample.mongoDB.MongoDBClient;
 import sample.mongoDB.MongoOperations;
 import sample.neuralNetwork.Network;
 import sample.neuralNetwork.TrainSet;
 import sample.validators.DateValidator;
+import sample.validators.TextFieldValidator;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,18 +50,26 @@ public class NeuralNetViewController {
     public TextArea textArea;
     public Button loadTestButton;
     public Button testButton;
+    public Button saveButton;
+    public TextField networkNameField;
+    public Button loadButton;
+    public Button saveToDBButton;
+    public Button loadFromDBButton;
+    public Button backToStatViewButton;
 
     private MongoDBClient mongoDBClient;
     private DateValidator dateValidator;
     private TrainSet trainSet;
     private Network network;
     private List<TestSetObject> testSet;
+    private TextFieldValidator textFieldValidator;
 
     @FXML
     private void initialize() {
         this.dateValidator = new DateValidator();
         this.trainSet = new TrainSet(8, 2);
         this.network = new Network(8, 5, 3, 2);
+        this.textFieldValidator = new TextFieldValidator();
     }
 
     public void setMongoDBClient(MongoDBClient mongoDBClient) {
@@ -277,5 +293,73 @@ public class NeuralNetViewController {
     private String getCurrencyCode(int i) {
         String[] codes = {"GBP", "USD", "CHF", "EUR"};
         return codes[i];
+    }
+
+    public void saveNetwork(ActionEvent event) {
+        if (textFieldValidator.checkIfEmpty(networkNameField)) {
+            textArea.clear();
+            textArea.appendText("Network Name field cannot be empty.");
+            return;
+        }
+        NetworkFileOperations operations = new NetworkFileOperations(networkNameField);
+        boolean result = operations.saveToFile(network);
+        if (result) {
+            textArea.clear();
+            textArea.appendText(networkNameField.getText() + ".txt has been saved successfully.");
+        } else {
+            textArea.clear();
+            textArea.appendText("Save operation couldn't be completed.");
+        }
+    }
+
+    public void loadNetwork(ActionEvent event) {
+        if (textFieldValidator.checkIfEmpty(networkNameField)) {
+            textArea.clear();
+            textArea.appendText("Network Name field cannot be empty.");
+            return;
+        }
+        NetworkFileOperations operations = new NetworkFileOperations(networkNameField);
+        network = operations.loadFromFile();
+        if (network != null) {
+            textArea.clear();
+            textArea.appendText("Network: " + networkNameField.getText() + " has been loaded successfully.");
+        } else {
+            textArea.clear();
+            textArea.appendText("Loading network from file failed.");
+        }
+    }
+
+    public void saveToMongo(ActionEvent event) {
+        if (textFieldValidator.checkIfEmpty(networkNameField)) {
+            textArea.clear();
+            textArea.appendText("Network Name field cannot be empty.");
+            return;
+        }
+        mongoDBClient.saveNetwork(network, networkNameField);
+        textArea.clear();
+        textArea.appendText("Network: " + networkNameField.getText() + " has been saved successfully.");
+    }
+
+    public void loadFromMongo(ActionEvent event) {
+        if (textFieldValidator.checkIfEmpty(networkNameField)) {
+            textArea.clear();
+            textArea.appendText("Network Name field cannot be empty.");
+            return;
+        }
+        network = mongoDBClient.loadNetwork(networkNameField);
+        textArea.clear();
+        textArea.appendText("Network: " + networkNameField.getText() + " has been loaded successfully.");
+    }
+
+    public void showStatisticsView(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/statisticalView.fxml"));
+        Parent statsView = loader.load();
+        Scene scene = new Scene(statsView);
+        Stage window = (Stage)((Node)event.getSource()).getScene().getWindow();
+        window.setScene(scene);
+        StatisticalViewController controller = loader.<StatisticalViewController>getController();
+        controller.setMongoDBClient(mongoDBClient);
+        LOGGER.debug("Switching to statistical view.");
+        window.show();
     }
 }

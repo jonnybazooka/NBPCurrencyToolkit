@@ -3,9 +3,6 @@ package sample.neuralNetwork;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by Luecx on 09.08.2017.
- */
 public class TrainSet {
 
     public final int INPUT_SIZE;

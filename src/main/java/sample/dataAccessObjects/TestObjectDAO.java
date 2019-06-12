@@ -24,13 +24,13 @@ public class TestObjectDAO {
     public String getExpectedResult(TestSetObject object, String code) throws NoSuchCurrencyException {
         switch (code) {
             case "GBP":
-                return String.format("GBP --> Date: %s | Expected change: %.4f ", object.getDate(), object.getGbp_change_t0());
+                return String.format("GBP --> Date: %s | Real change: %.4f ", object.getDate(), object.getGbp_change_t0());
             case "USD":
-                return String.format("USD --> Date: %s | Expected change: %.4f ", object.getDate(), object.getUsd_change_t0());
+                return String.format("USD --> Date: %s | Real change: %.4f ", object.getDate(), object.getUsd_change_t0());
             case "CHF":
-                return String.format("CHF --> Date: %s | Expected change: %.4f ", object.getDate(), object.getChf_change_t0());
+                return String.format("CHF --> Date: %s | Real change: %.4f ", object.getDate(), object.getChf_change_t0());
             case "EUR":
-                return String.format("EUR --> Date: %s | Expected change: %.4f ", object.getDate(), object.getEur_change_t0());
+                return String.format("EUR --> Date: %s | Real change: %.4f ", object.getDate(), object.getEur_change_t0());
             default:
                 throw new NoSuchCurrencyException("Currency code not recognized.");
         }

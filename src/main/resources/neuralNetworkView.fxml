@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
@@ -9,6 +10,8 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controllers.NeuralNetViewController">
    <top>
@@ -73,4 +76,55 @@
    <center>
       <TextArea fx:id="textArea" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
    </center>
+   <bottom>
+      <HBox prefHeight="64.0" prefWidth="800.0" BorderPane.alignment="CENTER">
+         <children>
+            <TextField fx:id="networkNameField" prefHeight="31.0" prefWidth="226.0" promptText="Enter Network's Name">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </TextField>
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveNetwork" prefHeight="54.0" prefWidth="98.0" text="Save To File" textAlignment="CENTER" wrapText="true">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="loadButton" mnemonicParsing="false" onAction="#loadNetwork" prefHeight="53.0" prefWidth="118.0" text="Load From File" textAlignment="CENTER" wrapText="true">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="saveToDBButton" onAction="#saveToMongo" mnemonicParsing="false" prefHeight="59.0" prefWidth="95.0" text="Save To Database" textAlignment="CENTER" wrapText="true">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="loadFromDBButton" onAction="#loadFromMongo" mnemonicParsing="false" prefHeight="59.0" prefWidth="114.0" text="Load From Database" textAlignment="CENTER" wrapText="true">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+            <Button fx:id="backToStatViewButton" onAction="#showStatisticsView" mnemonicParsing="false" prefHeight="54.0" prefWidth="128.0" text="Back to Statistical View" textAlignment="CENTER" wrapText="true">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </bottom>
 </BorderPane>

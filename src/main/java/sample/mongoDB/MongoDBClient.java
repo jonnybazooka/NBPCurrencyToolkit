@@ -1,13 +1,21 @@
 package sample.mongoDB;
 
+import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.FindOneAndReplaceOptions;
+import javafx.scene.control.TextField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bson.Document;
 import sample.exceptions.NoSuchCurrencyException;
 import sample.mongoDB.operations.*;
+import sample.neuralNetwork.Network;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MongoDBClient {
     private static final Logger LOGGER = LogManager.getLogger(MongoDBClient.class.getName());
@@ -48,5 +56,27 @@ public class MongoDBClient {
             default:
                 throw new NoSuchCurrencyException("Currency code not recognized.");
         }
+    }
+
+    public void saveNetwork(Network network, TextField networkNameField) {
+        LOGGER.debug("Attempting to save network: " + networkNameField.getText() + " to database.");
+        Gson gson = new Gson();
+        String json = gson.toJson(network);
+        MongoCollection<Document> collection = this.getCollection("savedDatabases");
+        Document document = new Document();
+        document.append("networkName", networkNameField.getText());
+        document.append("network", json);
+        collection.findOneAndReplace(Filters.eq("networkName", networkNameField.getText())
+                , document
+                , new FindOneAndReplaceOptions().upsert(true));
+    }
+
+    public Network loadNetwork(TextField networkNameField) {
+        LOGGER.debug("Attempting to load network: " + networkNameField.getText() + " from database.");
+        MongoCollection<Document> collection = this.getCollection("savedDatabases");
+        List<Document> documents = collection.find(Filters.eq("networkName", networkNameField.getText())).into(new ArrayList<>());
+        String json = documents.get(0).getString("network");
+        Gson gson = new Gson();
+        return gson.fromJson(json, Network.class);
     }
 }

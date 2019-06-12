@@ -1,7 +1,5 @@
 package sample.neuralNetwork;
 
-import java.util.Arrays;
-
 public class Network {
 
     private double[][] output;
