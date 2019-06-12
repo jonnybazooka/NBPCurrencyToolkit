@@ -6,6 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Author: Tomasz Gieraltowski
+ * email: tgieraltowski@gmail.com
+ * github: https://github.com/jonnybazooka
+ * first release: 2019-06-12
+ * Enjoy!
+ */
+
 public class Main extends Application {
 
     @Override

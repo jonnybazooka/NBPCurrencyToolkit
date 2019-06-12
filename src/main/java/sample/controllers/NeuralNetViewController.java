@@ -1,15 +1,14 @@
 package sample.controllers;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +27,9 @@ import sample.validators.DateValidator;
 import sample.validators.TextFieldValidator;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +58,12 @@ public class NeuralNetViewController {
     public Button saveToDBButton;
     public Button loadFromDBButton;
     public Button backToStatViewButton;
+    public Button createNewNetworkButton;
+    public Slider layersSlider;
+    public Slider layerOneSlider;
+    public Slider layerTwoSlider;
+    public Slider layerThreeSlider;
+    public Slider layerFourSlider;
 
     private MongoDBClient mongoDBClient;
     private DateValidator dateValidator;
@@ -68,8 +76,14 @@ public class NeuralNetViewController {
     private void initialize() {
         this.dateValidator = new DateValidator();
         this.trainSet = new TrainSet(8, 2);
-        this.network = new Network(8, 5, 3, 2);
+        //this.network = new Network(8, 5, 3, 2);
         this.textFieldValidator = new TextFieldValidator();
+        this.layersSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                enableSliders();
+            }
+        });
     }
 
     public void setMongoDBClient(MongoDBClient mongoDBClient) {
@@ -138,13 +152,28 @@ public class NeuralNetViewController {
     }
 
     public void train(ActionEvent event) {
+        if (network == null) {
+            textArea.clear();
+            textArea.appendText("No neural network detected. Load a network or create a new one.");
+            return;
+        }
+        Instant start = Instant.now();
+        textArea.clear();
         int loops = Integer.parseInt(cycles.getText());
         int batch = Integer.parseInt(batchSize.getText());
         network.train(trainSet, loops, batch);
+        Instant end = Instant.now();
+        Duration duration = Duration.between(start, end);
         LOGGER.debug("Network training complete.");
+        textArea.appendText("Training completed in " + duration.getSeconds() + " s.");
     }
 
     public void test(ActionEvent event) {
+        if (network == null) {
+            textArea.clear();
+            textArea.appendText("No neural network detected. Load a network or create a new one.");
+            return;
+        }
         textArea.clear();
         TestObjectDAO testObjectDAO = new TestObjectDAO();
         double goodPredictions = 0;
@@ -361,5 +390,45 @@ public class NeuralNetViewController {
         controller.setMongoDBClient(mongoDBClient);
         LOGGER.debug("Switching to statistical view.");
         window.show();
+    }
+
+    public void createNewNetwork(ActionEvent event) {
+        LOGGER.debug("Attempting to create new network.");
+        if (layersSlider.getValue() == 1) {
+            network = new Network(8, (int)layerOneSlider.getValue(), 2);
+        } else if (layersSlider.getValue() == 2) {
+            network = new Network(8, (int)layerOneSlider.getValue()
+                    ,(int)layerTwoSlider.getValue(), 2);
+        } else if (layersSlider.getValue() == 3) {
+            network = new Network(8, (int)layerOneSlider.getValue()
+                    ,(int)layerTwoSlider.getValue(), (int)layerThreeSlider.getValue(), 2);
+        } else if (layersSlider.getValue() == 4) {
+            network = new Network(8, (int)layerOneSlider.getValue()
+                    ,(int)layerTwoSlider.getValue(), (int)layerThreeSlider.getValue(), (int)layerFourSlider.getValue(), 2);
+        }
+    }
+
+    private void enableSliders() {
+        if (layersSlider.getValue() == 1) {
+            layerOneSlider.setDisable(false);
+            layerTwoSlider.setDisable(true);
+            layerThreeSlider.setDisable(true);
+            layerFourSlider.setDisable(true);
+        } else if (layersSlider.getValue() == 2) {
+            layerOneSlider.setDisable(false);
+            layerTwoSlider.setDisable(false);
+            layerThreeSlider.setDisable(true);
+            layerFourSlider.setDisable(true);
+        } else if (layersSlider.getValue() == 3) {
+            layerOneSlider.setDisable(false);
+            layerTwoSlider.setDisable(false);
+            layerThreeSlider.setDisable(false);
+            layerFourSlider.setDisable(true);
+        } else if (layersSlider.getValue() == 4) {
+            layerOneSlider.setDisable(false);
+            layerTwoSlider.setDisable(false);
+            layerThreeSlider.setDisable(false);
+            layerFourSlider.setDisable(false);
+        }
     }
 }
