@@ -55,7 +55,7 @@ This algorithm is all about training. My initial desire was to create my own alg
 
 **Testing**
 
-After the whole training process it's time to find out if our network is worth anything. It's time for testing. Testing set of data should always be a different than a training set. As was said before our network will have two output neurons. If output_0 will have higher value than neuron_1 the network will predict a rise of our currency rate. Otherwise it will predict a drop. Testing set of data will contain real-life currency changes and those will be compared to our network's predictions to assess it's efficiency.
+After the whole training process it's time to find out if our network is worth anything. It's time for testing. Testing set of data should always be a different than a training set. As was said before our network will have two output neurons. If *output_0* will have higher value than *output_1* the network will predict a rise of our currency rate. Otherwise it will predict a drop. Testing set of data will contain real-life currency changes and those will be compared to our network's predictions to assess it's efficiency.
 
 ### Limitations
 
